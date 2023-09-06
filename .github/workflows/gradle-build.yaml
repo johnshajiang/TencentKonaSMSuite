@@ -3,6 +3,12 @@ name: Execute build on PR
 on: pull_request
 
 jobs:
+  precheck:
+    steps:
+      - name: Run precheck script
+        run: ./.github/workflows/scripts/precheck.sh
+        shell: bash
+
   gradle:
     strategy:
       matrix:
