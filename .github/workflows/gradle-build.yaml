@@ -8,7 +8,7 @@ jobs:
 
     steps:
       - name: Run precheck script
-        run: pwd && .github/workflows/scripts/precheck.sh
+        run: pwd && sh .github/workflows/scripts/precheck.sh
         shell: bash
 
   gradle:
