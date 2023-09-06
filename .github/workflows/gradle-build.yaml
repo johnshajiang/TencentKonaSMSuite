@@ -15,6 +15,9 @@ jobs:
         shell: bash
 
   gradle:
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') }}
+    needs: [precheck]
+
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
