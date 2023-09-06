@@ -3,7 +3,7 @@ name: Execute build on PR
 on: pull_request
 
 jobs:
-  precheck:
+  deps:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,8 +15,8 @@ jobs:
         shell: bash
 
   gradle:
-    if: ${{ always() && contains(join(needs.*.result, ','), 'success') }}
-    needs: [precheck]
+#    if: ${{ always() && contains(join(needs.*.result, ','), 'success') }}
+#    needs: [precheck]
 
     strategy:
       matrix:
