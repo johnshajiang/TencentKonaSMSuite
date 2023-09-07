@@ -3,8 +3,8 @@
 # Check trailing space
 files=$(find . -type f \
     -not -path "./.git/*" \
-    -not -path "./.gradle/*" -not -path "./*/.gradle/*" \
-    -not -path "./*/build/*" \
+    -not -path "*/.gradle/*" \
+    -not -path "*/build/*" \
     -not -name "*.jar" \
     -exec egrep -l " +$" {} \;)
 
