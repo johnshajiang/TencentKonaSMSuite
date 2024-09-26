@@ -32,7 +32,7 @@ import static com.tencent.kona.crypto.provider.nativeImpl.NativeSM4.*;
 /**
  * The test for native SM4 implementation.
  */
-@EnabledOnOs(OS.LINUX)
+@EnabledOnOs({OS.LINUX, OS.MAC})
 public class NativeSM4Test {
 
     private static final byte[] KEY = toBytes("0123456789abcdef0123456789abcdef");

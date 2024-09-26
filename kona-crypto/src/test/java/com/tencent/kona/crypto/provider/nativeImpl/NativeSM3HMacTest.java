@@ -30,7 +30,7 @@ import static com.tencent.kona.crypto.util.Constants.*;
 /**
  * The test for native SM3 HMAC implementation.
  */
-@EnabledOnOs(OS.LINUX)
+@EnabledOnOs({OS.LINUX, OS.MAC})
 public class NativeSM3HMacTest {
 
     private static final byte[] KEY = toBytes("0123456789abcdef0123456789abcdef");
