@@ -33,7 +33,7 @@ import static com.tencent.kona.crypto.util.Constants.*;
 /**
  * The test for native SM2 implementation.
  */
-@EnabledOnOs(OS.LINUX)
+@EnabledOnOs({OS.LINUX, OS.MAC})
 public class NativeSM2Test {
 
     private final static String PUB_KEY_ODD

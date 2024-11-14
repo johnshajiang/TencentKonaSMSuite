@@ -27,7 +27,7 @@ import org.junit.jupiter.api.condition.OS;
 /**
  * The test for native SM4 engine.
  */
-@EnabledOnOs(OS.LINUX)
+@EnabledOnOs({OS.LINUX, OS.MAC})
 public class NativeSM4EngineTest {
 
     private static final byte[] KEY = {

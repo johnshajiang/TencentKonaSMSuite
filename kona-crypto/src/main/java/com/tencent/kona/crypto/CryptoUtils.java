@@ -45,7 +45,7 @@ public final class CryptoUtils {
             "java.specification.vendor");
 
     private static final boolean USE_NATIVE_CRYPTO = privilegedGetBoolProperty(
-            "com.tencent.kona.useNativeCrypto", "false");
+            "com.tencent.kona.useNativeCrypto", "true");
 
     public static String privilegedGetProperty(String key, String def) {
         return AccessController.doPrivileged(
@@ -87,7 +87,7 @@ public final class CryptoUtils {
     }
 
     public static boolean useNativeCrypto() {
-        return USE_NATIVE_CRYPTO && isLinux() && !isAndroid();
+        return USE_NATIVE_CRYPTO && isLinux() && isMac() && !isAndroid();
     }
 
     public static boolean isLinux() {

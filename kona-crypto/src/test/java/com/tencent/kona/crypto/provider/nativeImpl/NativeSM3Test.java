@@ -30,7 +30,7 @@ import static com.tencent.kona.crypto.util.Constants.*;
 /**
  * The test for native SM3 implementation.
  */
-@EnabledOnOs(OS.LINUX)
+@EnabledOnOs({OS.LINUX, OS.MAC})
 public class NativeSM3Test {
 
     private static final byte[] MESSAGE_0 = new byte[0];
