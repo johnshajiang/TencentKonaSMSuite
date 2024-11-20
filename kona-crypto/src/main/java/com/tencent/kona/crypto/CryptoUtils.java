@@ -87,7 +87,7 @@ public final class CryptoUtils {
     }
 
     public static boolean useNativeCrypto() {
-        return USE_NATIVE_CRYPTO && isLinux() && isMac() && !isAndroid();
+        return USE_NATIVE_CRYPTO && (isLinux() || isMac()) && !isAndroid();
     }
 
     public static boolean isLinux() {
