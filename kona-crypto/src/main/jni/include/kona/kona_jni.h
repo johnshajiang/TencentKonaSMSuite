@@ -7,10 +7,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#undef com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto_GOOD
-#define com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto_GOOD 0L
-#undef com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto_BAD
-#define com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto_BAD -1L
+#undef com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto_OPENSSL_SUCCESS
+#define com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto_OPENSSL_SUCCESS 1L
+#undef com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto_OPENSSL_FAILURE
+#define com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto_OPENSSL_FAILURE 0L
 /*
  * Class:     com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto
  * Method:    sm3CreateCtx
@@ -189,6 +189,14 @@ JNIEXPORT jbyteArray JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_Na
 
 /*
  * Class:     com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto
+ * Method:    sm2ValidatePoint
+ * Signature: ([B)I
+ */
+JNIEXPORT jint JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto_sm2ValidatePoint
+  (JNIEnv *, jobject, jbyteArray);
+
+/*
+ * Class:     com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto
  * Method:    sm2KeyPairGenCreateCtx
  * Signature: ()J
  */
@@ -274,6 +282,30 @@ JNIEXPORT jbyteArray JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_Na
  */
 JNIEXPORT jint JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto_sm2SignatureVerify
   (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray);
+
+/*
+ * Class:     com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto
+ * Method:    sm2KeyExCreateCtx
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto_sm2KeyExCreateCtx
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto
+ * Method:    sm2KeyExFreeCtx
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto_sm2KeyExFreeCtx
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto
+ * Method:    sm2DeriveKey
+ * Signature: (J[B[B[B[B[B[B[BZI)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto_sm2DeriveKey
+  (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray, jbyteArray, jbyteArray, jbyteArray, jbyteArray, jbyteArray, jboolean, jint);
 
 #ifdef __cplusplus
 }

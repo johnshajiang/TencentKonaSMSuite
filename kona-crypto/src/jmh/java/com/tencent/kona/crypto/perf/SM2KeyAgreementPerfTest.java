@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022, 2023, THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2022, 2024, THL A29 Limited, a Tencent company. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -50,11 +50,13 @@ import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.annotations.Warmup;
 
 import javax.crypto.KeyAgreement;
+import java.security.InvalidKeyException;
 import java.security.Security;
 import java.security.spec.ECFieldFp;
 import java.util.concurrent.TimeUnit;
 
 import static com.tencent.kona.crypto.CryptoUtils.toBytes;
+import static com.tencent.kona.crypto.TestUtils.PROVIDER;
 import static com.tencent.kona.crypto.spec.SM2ParameterSpec.COFACTOR;
 import static com.tencent.kona.crypto.spec.SM2ParameterSpec.CURVE;
 import static com.tencent.kona.crypto.spec.SM2ParameterSpec.GENERATOR;
@@ -101,7 +103,7 @@ public class SM2KeyAgreementPerfTest {
 
         KeyAgreement keyAgreement;
 
-        @Setup(Level.Trial)
+        @Setup(Level.Invocation)
         public void setup() throws Exception {
             SM2KeyAgreementParamSpec paramSpec = new SM2KeyAgreementParamSpec(
                     toBytes(ID),
@@ -111,10 +113,9 @@ public class SM2KeyAgreementPerfTest {
                     new SM2PublicKey(toBytes(PEER_PUB_KEY)),
                     true,
                     16);
-            keyAgreement = KeyAgreement.getInstance("SM2");
+            keyAgreement = KeyAgreement.getInstance("SM2", PROVIDER);
             keyAgreement.init(
                     new SM2PrivateKey(toBytes(TMP_PRI_KEY)), paramSpec);
-            keyAgreement.doPhase(new SM2PublicKey(toBytes(PEER_TMP_PUB_KEY)), true);
         }
     }
 
@@ -124,7 +125,7 @@ public class SM2KeyAgreementPerfTest {
         SM2KeyExchange keyAgreement;
         ParametersWithID params;
 
-        @Setup(Level.Trial)
+        @Setup(Level.Invocation)
         public void setup() throws Exception {
             ECCurve ecCurve = new ECCurve.Fp(
                 ((ECFieldFp) CURVE.getField()).getP(),
@@ -167,7 +168,8 @@ public class SM2KeyAgreementPerfTest {
     }
 
     @Benchmark
-    public byte[] generateSecret(KeyAgreementHolder holder) {
+    public byte[] generateSecret(KeyAgreementHolder holder) throws InvalidKeyException {
+        holder.keyAgreement.doPhase(new SM2PublicKey(toBytes(PEER_TMP_PUB_KEY)), true);
         return holder.keyAgreement.generateSecret();
     }
 
