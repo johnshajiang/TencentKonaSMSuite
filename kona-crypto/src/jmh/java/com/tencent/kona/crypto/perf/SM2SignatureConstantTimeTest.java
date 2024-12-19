@@ -111,7 +111,7 @@ public class SM2SignatureConstantTimeTest {
                 case "Big": keyPair = KEY_PAIR_BIG;
             }
 
-            if ("KonaCrypto".equals(provider)) {
+            if ("KonaCrypto".equals(provider) || "KonaCrypto-Native".equals(provider)) {
                 signer = Signature.getInstance("SM2", provider);
                 signer.setParameter(new SM2SignatureParameterSpec(
                         ID, (ECPublicKey) keyPair.getPublic()));
