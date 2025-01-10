@@ -213,6 +213,14 @@ JNIEXPORT jbyteArray JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_Na
 
 /*
  * Class:     com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto
+ * Method:    sm2OneShotKeyPairGenGenKeyPair
+ * Signature: ()[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto_sm2OneShotKeyPairGenGenKeyPair
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto
  * Method:    sm2CipherCreateCtx
  * Signature: ([B)J
  */

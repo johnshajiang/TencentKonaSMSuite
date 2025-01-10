@@ -32,7 +32,7 @@ import java.security.PrivilegedExceptionAction;
 import static com.tencent.kona.crypto.CryptoUtils.*;
 
 /**
- * The internal APIs for underlying native crypto library from OpenSSL 3.4.0.
+ * The internal APIs for underlying native crypto library from OpenSSL.
  */
 final class NativeCrypto {
 
@@ -41,19 +41,8 @@ final class NativeCrypto {
     private static final String KONA_CRYPTO_LIB = privilegedGetProperty(
             "com.tencent.kona.crypto.lib.path");
 
-    private NativeCrypto() {}
-
-    private static class InstanceHolder {
-
-        static {
-            loadLibs();
-        }
-
-        private static final NativeCrypto INSTANCE = new NativeCrypto();
-    }
-
-    static NativeCrypto nativeCrypto() {
-        return InstanceHolder.INSTANCE;
+    static {
+        loadLibs();
     }
 
     private static void loadLibs() {
@@ -161,6 +150,16 @@ final class NativeCrypto {
         }
     }
 
+    private static class InstanceHolder {
+        private static final NativeCrypto INSTANCE = new NativeCrypto();
+    }
+
+    static NativeCrypto nativeCrypto() {
+        return InstanceHolder.INSTANCE;
+    }
+
+    private NativeCrypto() {}
+
     static final int OPENSSL_SUCCESS = 1;
     static final int OPENSSL_FAILURE = 0;
 
@@ -197,6 +196,7 @@ final class NativeCrypto {
     native long   sm2KeyPairGenCreateCtx();
     native void   sm2KeyPairGenFreeCtx(long pointer);
     native byte[] sm2KeyPairGenGenKeyPair(long pointer);
+    static native byte[] sm2OneShotKeyPairGenGenKeyPair();
 
     native long   sm2CipherCreateCtx(byte[] key);
     native void   sm2CipherFreeCtx(long pointer);

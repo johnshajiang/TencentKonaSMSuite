@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2024, 2025, THL A29 Limited, a Tencent company. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -143,6 +143,12 @@ public class NativeRefProfTest {
         }
     }
 
+    private static void testSM2OneShotKeyPairGen() {
+        for (int i = 0; i < ITERATIONS; i++) {
+            NativeCrypto.sm2OneShotKeyPairGenGenKeyPair();
+        }
+    }
+
     private static void testSM2CipherEncrypter() throws Exception {
         NativeSM2KeyPairGen sm2KeyPairGen = new NativeSM2KeyPairGen();
         byte[] keyPair = sm2KeyPairGen.genKeyPair();
@@ -250,6 +256,7 @@ public class NativeRefProfTest {
         tasks.add(()-> {testSM4GCMDecrypter(); return null;});
 
         tasks.add(()-> {testSM2KeyPairGen(); return null;});
+        tasks.add(()-> {testSM2OneShotKeyPairGen(); return null;});
 
         tasks.add(()-> {testSM2CipherEncrypter(); return null;});
         tasks.add(()-> {testSM2CipherDecrypter(); return null;});
