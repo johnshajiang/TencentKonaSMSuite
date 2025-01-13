@@ -42,7 +42,7 @@ public class NativeRefProfTest {
 
     private static final int ITERATIONS = 1_000_000_000;
 
-    private static void testSM3() {
+    private static void testSM3Digest() {
         for (int i = 0; i < ITERATIONS; i++) {
             NativeSM3 sm3 = new NativeSM3();
             sm3.update(DATA);
@@ -51,13 +51,22 @@ public class NativeRefProfTest {
         }
     }
 
-    private static void testSM3OneShot() {
+    private static void testSM3OneShotDigest() {
         for (int i = 0; i < ITERATIONS; i++) {
             NativeCrypto.sm3OneShotDigest(DATA);
         }
     }
 
     private static void testSM3HMac() {
+        for (int i = 0; i < ITERATIONS; i++) {
+            NativeSM3HMac sm3HMac = new NativeSM3HMac(KEY);
+            sm3HMac.update(DATA);
+            sm3HMac.doFinal(DATA);
+            sm3HMac.close();
+        }
+    }
+
+    private static void testSM3OneShotHMac() {
         for (int i = 0; i < ITERATIONS; i++) {
             NativeSM3HMac sm3HMac = new NativeSM3HMac(KEY);
             sm3HMac.update(DATA);
@@ -322,10 +331,11 @@ public class NativeRefProfTest {
     public static void main(String[] args) throws Exception {
         List<Callable<Void>> tasks = new ArrayList<>();
 
-        tasks.add(()-> {testSM3(); return null;});
-        tasks.add(()-> {testSM3OneShot(); return null;});
+        tasks.add(()-> {testSM3Digest(); return null;});
+        tasks.add(()-> {testSM3OneShotDigest(); return null;});
 
         tasks.add(()-> {testSM3HMac(); return null;});
+        tasks.add(()-> {testSM3OneShotHMac(); return null;});
 
         tasks.add(()-> {testSM4CBCEncrypter(); return null;});
         tasks.add(()-> {testSM4CBCDecrypter(); return null;});

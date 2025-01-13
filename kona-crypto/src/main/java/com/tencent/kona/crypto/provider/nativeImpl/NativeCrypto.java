@@ -179,6 +179,7 @@ final class NativeCrypto {
     native byte[] sm3hmacFinal(long pointer);
     native int    sm3hmacReset(long pointer);
     native long   sm3hmacClone(long pointer);
+    static native byte[] sm3hmacOneShotMac(byte[] key, byte[] data);
 
     /* ***** SM4 ***** */
     native long   sm4CreateCtx(boolean encrypt, String mode, boolean padding, byte[] key, byte[] iv);
