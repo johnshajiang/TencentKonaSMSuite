@@ -218,4 +218,8 @@ final class NativeCrypto {
                                byte[] priKey, byte[] pubKey, byte[] ePrivKey, byte[] id,
                                byte[] peerPubKey, byte[] peerEPubKey, byte[] peerId,
                                boolean isInitiator, int sharedKeyLength);
+    static native byte[] sm2OneShotDeriveKey(
+                               byte[] priKey, byte[] pubKey, byte[] ePrivKey, byte[] id,
+                               byte[] peerPubKey, byte[] peerEPubKey, byte[] peerId,
+                               boolean isInitiator, int sharedKeyLength);
 }
