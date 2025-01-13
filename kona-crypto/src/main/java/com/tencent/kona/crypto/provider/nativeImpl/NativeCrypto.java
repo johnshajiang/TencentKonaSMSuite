@@ -209,6 +209,8 @@ final class NativeCrypto {
     native void   sm2SignatureFreeCtx(long pointer);
     native byte[] sm2SignatureSign(long pointer, byte[] message);
     native int    sm2SignatureVerify(long pointer, byte[] message, byte[] signature);
+    static native byte[] sm2OneShotSignatureSign(byte[] key, byte[] id, byte[] message);
+    static native int    sm2OneShotSignatureVerify(byte[] key, byte[] id, byte[] message, byte[] signature);
 
     native long   sm2KeyExCreateCtx();
     native void   sm2KeyExFreeCtx(long pointer);

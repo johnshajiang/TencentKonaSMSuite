@@ -216,6 +216,18 @@ public class NativeRefProfTest {
         }
     }
 
+    private static void testSM2OneShotSignatureSign() throws Exception {
+        NativeSM2KeyPairGen sm2KeyPairGen = new NativeSM2KeyPairGen();
+        byte[] keyPair = sm2KeyPairGen.genKeyPair();
+        byte[] priKey = copy(keyPair, 0, SM2_PRIKEY_LEN);
+        byte[] pubKey = copy(keyPair, SM2_PRIKEY_LEN, SM2_PUBKEY_LEN);
+        sm2KeyPairGen.close();
+
+        for (int i = 0; i < ITERATIONS; i++) {
+            NativeCrypto.sm2OneShotSignatureSign(keyPair, priKey, pubKey);
+        }
+    }
+
     private static void testSM2SignatureVerify() throws Exception {
         NativeSM2KeyPairGen sm2KeyPairGen = new NativeSM2KeyPairGen();
         byte[] keyPair = sm2KeyPairGen.genKeyPair();
@@ -232,6 +244,22 @@ public class NativeRefProfTest {
                     = new NativeSM2Signature(pubKey, ID, false);
             sm2Verifier.verify(DATA, signature);
             sm2Verifier.close();
+        }
+    }
+
+    private static void testSM2OneShotSignatureVerify() throws Exception {
+        NativeSM2KeyPairGen sm2KeyPairGen = new NativeSM2KeyPairGen();
+        byte[] keyPair = sm2KeyPairGen.genKeyPair();
+        sm2KeyPairGen.close();
+        byte[] priKey = copy(keyPair, 0, SM2_PRIKEY_LEN);
+        byte[] pubKey = copy(keyPair, SM2_PRIKEY_LEN, SM2_PUBKEY_LEN);
+
+        NativeSM2Signature sm2Signer
+                = new NativeSM2Signature(priKey, pubKey, ID, true);
+        byte[] signature = sm2Signer.sign(DATA);
+
+        for (int i = 0; i < ITERATIONS; i++) {
+            NativeCrypto.sm2OneShotSignatureVerify(keyPair, priKey, pubKey, signature);
         }
     }
 
@@ -289,6 +317,8 @@ public class NativeRefProfTest {
 
         tasks.add(()-> {testSM2SignatureSign(); return null;});
         tasks.add(()-> {testSM2SignatureVerify(); return null;});
+        tasks.add(()-> {testSM2OneShotSignatureSign(); return null;});
+        tasks.add(()-> {testSM2OneShotSignatureVerify(); return null;});
 
         tasks.add(()-> {testSM2KeyAgreement(); return null;});
 
