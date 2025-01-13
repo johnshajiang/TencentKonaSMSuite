@@ -161,6 +161,16 @@ public class NativeRefProfTest {
         }
     }
 
+    private static void testSM2OneShotCipherEncrypter() throws Exception {
+        NativeSM2KeyPairGen sm2KeyPairGen = new NativeSM2KeyPairGen();
+        byte[] keyPair = sm2KeyPairGen.genKeyPair();
+        sm2KeyPairGen.close();
+
+        for (int i = 0; i < ITERATIONS; i++) {
+            NativeCrypto.sm2OneShotCipherEncrypt(keyPair, DATA);
+        }
+    }
+
     private static void testSM2CipherDecrypter() throws Exception {
         NativeSM2KeyPairGen sm2KeyPairGen = new NativeSM2KeyPairGen();
         byte[] keyPair = sm2KeyPairGen.genKeyPair();
@@ -174,6 +184,20 @@ public class NativeRefProfTest {
             NativeSM2Cipher sm2Decrypter = new NativeSM2Cipher(keyPair);
             sm2Decrypter.decrypt(ciphertext);
             sm2Decrypter.close();
+        }
+    }
+
+    private static void testSM2OneShotCipherDecrypter() throws Exception {
+        NativeSM2KeyPairGen sm2KeyPairGen = new NativeSM2KeyPairGen();
+        byte[] keyPair = sm2KeyPairGen.genKeyPair();
+        sm2KeyPairGen.close();
+
+        NativeSM2Cipher sm2Encrypter = new NativeSM2Cipher(keyPair);
+        byte[] ciphertext = sm2Encrypter.encrypt(DATA);
+        sm2Encrypter.close();
+
+        for (int i = 0; i < ITERATIONS; i++) {
+            NativeCrypto.sm2OneShotCipherDecrypt(keyPair, ciphertext);
         }
     }
 
@@ -260,6 +284,8 @@ public class NativeRefProfTest {
 
         tasks.add(()-> {testSM2CipherEncrypter(); return null;});
         tasks.add(()-> {testSM2CipherDecrypter(); return null;});
+        tasks.add(()-> {testSM2OneShotCipherEncrypter(); return null;});
+        tasks.add(()-> {testSM2OneShotCipherDecrypter(); return null;});
 
         tasks.add(()-> {testSM2SignatureSign(); return null;});
         tasks.add(()-> {testSM2SignatureVerify(); return null;});

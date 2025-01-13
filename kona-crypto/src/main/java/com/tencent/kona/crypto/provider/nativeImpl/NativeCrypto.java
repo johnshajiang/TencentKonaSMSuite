@@ -202,6 +202,8 @@ final class NativeCrypto {
     native void   sm2CipherFreeCtx(long pointer);
     native byte[] sm2CipherEncrypt(long pointer, byte[] plaintext);
     native byte[] sm2CipherDecrypt(long pointer, byte[] ciphertext);
+    static native byte[] sm2OneShotCipherEncrypt(byte[] key, byte[] plaintext);
+    static native byte[] sm2OneShotCipherDecrypt(byte[] key, byte[] ciphertext);
 
     native long   sm2SignatureCreateCtx(byte[] key, byte[] id, boolean isSign);
     native void   sm2SignatureFreeCtx(long pointer);

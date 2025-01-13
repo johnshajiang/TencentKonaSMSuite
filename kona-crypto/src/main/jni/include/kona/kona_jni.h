@@ -253,6 +253,22 @@ JNIEXPORT jbyteArray JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_Na
 
 /*
  * Class:     com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto
+ * Method:    sm2OneShotCipherEncrypt
+ * Signature: ([B[B)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto_sm2OneShotCipherEncrypt
+  (JNIEnv *, jclass, jbyteArray, jbyteArray);
+
+/*
+ * Class:     com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto
+ * Method:    sm2OneShotCipherDecrypt
+ * Signature: ([B[B)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto_sm2OneShotCipherDecrypt
+  (JNIEnv *, jclass, jbyteArray, jbyteArray);
+
+/*
+ * Class:     com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto
  * Method:    sm2SignatureCreateCtx
  * Signature: ([B[BZ)J
  */
