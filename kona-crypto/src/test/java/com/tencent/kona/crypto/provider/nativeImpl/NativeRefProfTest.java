@@ -51,6 +51,12 @@ public class NativeRefProfTest {
         }
     }
 
+    private static void testSM3OneShot() {
+        for (int i = 0; i < ITERATIONS; i++) {
+            NativeCrypto.sm3OneShotDigest(DATA);
+        }
+    }
+
     private static void testSM3HMac() {
         for (int i = 0; i < ITERATIONS; i++) {
             NativeSM3HMac sm3HMac = new NativeSM3HMac(KEY);
@@ -317,6 +323,8 @@ public class NativeRefProfTest {
         List<Callable<Void>> tasks = new ArrayList<>();
 
         tasks.add(()-> {testSM3(); return null;});
+        tasks.add(()-> {testSM3OneShot(); return null;});
+
         tasks.add(()-> {testSM3HMac(); return null;});
 
         tasks.add(()-> {testSM4CBCEncrypter(); return null;});

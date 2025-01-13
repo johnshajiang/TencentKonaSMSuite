@@ -61,6 +61,14 @@ JNIEXPORT jlong JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_NativeC
 
 /*
  * Class:     com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto
+ * Method:    sm3OneShotDigest
+ * Signature: ([B)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto_sm3OneShotDigest
+  (JNIEnv *, jclass, jbyteArray);
+
+/*
+ * Class:     com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto
  * Method:    sm3hmacCreateCtx
  * Signature: ([B)J
  */

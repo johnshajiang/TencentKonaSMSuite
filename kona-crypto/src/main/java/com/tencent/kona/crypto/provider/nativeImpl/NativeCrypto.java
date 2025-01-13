@@ -170,6 +170,7 @@ final class NativeCrypto {
     native byte[] sm3Final(long pointer);
     native int    sm3Reset(long pointer);
     native long   sm3Clone(long pointer);
+    static native byte[] sm3OneShotDigest(byte[] data);
 
     /* ***** SM3HMAC ***** */
     native long   sm3hmacCreateCtx(byte[] key);

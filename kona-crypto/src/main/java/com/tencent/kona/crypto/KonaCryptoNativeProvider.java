@@ -72,7 +72,7 @@ public class KonaCryptoNativeProvider extends Provider {
 
         provider.put("Alg.Alias.MessageDigest.OID.1.2.156.10197.1.401", "SM3");
         provider.put("MessageDigest.SM3",
-                "com.tencent.kona.crypto.provider.nativeImpl.SM3MessageDigest");
+                "com.tencent.kona.crypto.provider.nativeImpl.SM3OneShotMessageDigest");
         provider.put("Mac.HmacSM3",
                 "com.tencent.kona.crypto.provider.nativeImpl.SM3HMac");
         provider.put("Alg.Alias.Mac.SM3HMac", "HmacSM3");
