@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022, 2024, THL A29 Limited, a Tencent company. All rights reserved.
+ * Copyright (C) 2022, 2025, THL A29 Limited, a Tencent company. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify
@@ -36,6 +36,10 @@ public class KonaProvider extends Provider {
     private static final String INFO = "Kona PKIX Provider "
             + "supporting ShangMi crypto, PKI and secure protocols";
 
+    // Java, Native or NativeOneShot
+    private static final String DEFAULT_CRYPTO = privilegedGetProperty(
+            "com.tencent.kona.defaultCrypto", "Java");
+
     public static final String NAME = "Kona";
 
     private static final double VERSION_NUM = 1.0D;
@@ -60,8 +64,19 @@ public class KonaProvider extends Provider {
     }
 
     private static void putEntries(Provider provider) {
+        String defaultCrypto = KonaUtils.defaultCrypto();
+
+        String defaultCryptoProvider;
+        if ("Native".equalsIgnoreCase(defaultCrypto)) {
+            defaultCryptoProvider = "com.tencent.kona.crypto.KonaCryptoNativeProvider";
+        } else if ("NativeOneShot".equalsIgnoreCase(defaultCrypto)) {
+            defaultCryptoProvider = "com.tencent.kona.crypto.KonaCryptoNativeOneShotProvider";
+        } else {
+            defaultCryptoProvider = "com.tencent.kona.crypto.KonaCryptoProvider";
+        }
+
         try {
-            putEntries("com.tencent.kona.crypto.KonaCryptoProvider", provider);
+            putEntries(defaultCryptoProvider, provider);
             putEntries("com.tencent.kona.pkix.KonaPKIXProvider", provider);
             putEntries("com.tencent.kona.ssl.KonaSSLProvider", provider);
         } catch (Exception e) {
@@ -84,6 +99,11 @@ public class KonaProvider extends Provider {
             method.setAccessible(true);
             method.invoke(clazz, provider);
         }
+    }
+
+    public static String privilegedGetProperty(String key, String def) {
+        return AccessController.doPrivileged(
+                (PrivilegedAction<String>) () -> System.getProperty(key, def));
     }
 
     private static String privilegedSetProperty(String key, String value) {

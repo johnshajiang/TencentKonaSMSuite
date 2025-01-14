@@ -29,18 +29,18 @@ import java.security.Provider;
 /**
  * The Kona Crypto Provider based on OpenSSL.
  */
-public class KonaCryptoNativeProvider extends Provider {
+public class KonaCryptoNativeOneShotProvider extends Provider {
 
-    static final String NAME = "KonaCrypto-Native";
+    static final String NAME = "KonaCrypto-NativeOneShot";
 
     private static final double VERSION_NUM = 1.0D;
 
     private static final String INFO = "Kona crypto provider based on OpenSSL "
             + "(implements SM2, SM3 and SM4 algorithms)";
 
-    private static volatile KonaCryptoNativeProvider instance = null;
+    private static volatile KonaCryptoNativeOneShotProvider instance = null;
 
-    public KonaCryptoNativeProvider() {
+    public KonaCryptoNativeOneShotProvider() {
         super(NAME, VERSION_NUM, INFO);
 
         AccessController.doPrivileged(
@@ -72,9 +72,9 @@ public class KonaCryptoNativeProvider extends Provider {
 
         provider.put("Alg.Alias.MessageDigest.OID.1.2.156.10197.1.401", "SM3");
         provider.put("MessageDigest.SM3",
-                "com.tencent.kona.crypto.provider.nativeImpl.SM3MessageDigest");
+                "com.tencent.kona.crypto.provider.nativeImpl.SM3OneShotMessageDigest");
         provider.put("Mac.HmacSM3",
-                "com.tencent.kona.crypto.provider.nativeImpl.SM3HMac");
+                "com.tencent.kona.crypto.provider.nativeImpl.SM3OneShotHMac");
         provider.put("Alg.Alias.Mac.SM3HMac", "HmacSM3");
         provider.put("KeyGenerator.HmacSM3",
                 "com.tencent.kona.crypto.provider.SM3HMacKeyGenerator");
@@ -83,17 +83,17 @@ public class KonaCryptoNativeProvider extends Provider {
         provider.put("Alg.Alias.Cipher.OID.1.2.156.10197.1.301", "SM2");
         provider.put("Alg.Alias.Signature.OID.1.2.156.10197.1.501", "SM2");
         provider.put("KeyPairGenerator.SM2",
-                "com.tencent.kona.crypto.provider.nativeImpl.SM2KeyPairGenerator");
-        provider.put("Cipher.SM2", "com.tencent.kona.crypto.provider.nativeImpl.SM2Cipher");
-        provider.put("Signature.SM2", "com.tencent.kona.crypto.provider.nativeImpl.SM2Signature");
+                "com.tencent.kona.crypto.provider.nativeImpl.SM2OneShotKeyPairGenerator");
+        provider.put("Cipher.SM2", "com.tencent.kona.crypto.provider.nativeImpl.SM2OneShotCipher");
+        provider.put("Signature.SM2", "com.tencent.kona.crypto.provider.nativeImpl.SM2OneShotSignature");
         provider.put("Alg.Alias.Signature.SM3withSM2", "SM2");
-        provider.put("KeyAgreement.SM2", "com.tencent.kona.crypto.provider.nativeImpl.SM2KeyAgreement");
+        provider.put("KeyAgreement.SM2", "com.tencent.kona.crypto.provider.nativeImpl.SM2OneShotKeyAgreement");
         provider.put("KeyFactory.SM2", "com.tencent.kona.crypto.provider.SM2KeyFactory");
     }
 
-    public static KonaCryptoNativeProvider instance() {
+    public static KonaCryptoNativeOneShotProvider instance() {
         if (instance == null) {
-            instance = new KonaCryptoNativeProvider();
+            instance = new KonaCryptoNativeOneShotProvider();
         }
         return instance;
     }
