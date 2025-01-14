@@ -20,7 +20,6 @@
 
 package com.tencent.kona.crypto.provider.nativeImpl;
 
-import com.tencent.kona.crypto.util.Sweeper;
 import com.tencent.kona.jdk.internal.util.Preconditions;
 
 import java.security.MessageDigest;

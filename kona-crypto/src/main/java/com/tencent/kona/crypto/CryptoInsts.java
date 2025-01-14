@@ -114,7 +114,13 @@ public class CryptoInsts {
 
     public static Cipher getCipher(String algorithm)
             throws NoSuchPaddingException, NoSuchAlgorithmException {
-        return getCipher(algorithm, PROV);
+        if ("SM4".equalsIgnoreCase(algorithm)) {
+            return getCipher(algorithm,
+                    // use pure Java-based SM4 for TLCP/TLS protocol
+                    KonaCryptoProvider.instance());
+        } else {
+            return getCipher(algorithm, PROV);
+        }
     }
 
     private static final Set<String> MESSAGE_DIGEST_ALGOS
