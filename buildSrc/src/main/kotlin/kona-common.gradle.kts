@@ -35,6 +35,15 @@ sourceSets.create("jmh") {
     java.setSrcDirs(listOf("src/jmh/java"))
 }
 
+// Exclude some tests for KonaCryptoProvider
+val excludedTests: String = "**/KonaMessageDigestTest*"
+fun Test.excludeNativeOnlyTests() {
+    val patterns = excludedTests.split(",").map { it.trim() }
+    patterns.forEach { pattern ->
+        exclude(pattern)
+    }
+}
+
 tasks {
     val passedTasks = project.gradle.startParameter.taskNames
     println("Passed tasks: $passedTasks")
@@ -61,6 +70,7 @@ tasks {
 
     val testJavaOnCurrent = register("testJavaOnCurrent", CommonTest::class) {
         jvmArgs("-Dcom.tencent.kona.defaultCrypto=Java")
+        excludeNativeOnlyTests()
 
         systemProperty("test.classpath", classpath.joinToString(separator = ":"))
 
@@ -91,6 +101,7 @@ tasks {
 
     register("testJavaOnAdop8", CommonTest::class) {
         jvmArgs("-Dcom.tencent.kona.defaultCrypto=Java")
+        excludeNativeOnlyTests()
 
         systemProperty("test.classpath", classpath.joinToString(separator = ":"))
 
@@ -107,6 +118,7 @@ tasks {
     register("testJavaOnAdop11", CommonTest::class) {
         jvmArgs("-Dcom.tencent.kona.defaultCrypto=Java",
             "--add-exports", "java.base/jdk.internal.misc=ALL-UNNAMED")
+        excludeNativeOnlyTests()
 
         systemProperty("test.classpath", classpath.joinToString(separator = ":"))
 
@@ -123,6 +135,7 @@ tasks {
     register("testJavaOnAdop17", CommonTest::class) {
         jvmArgs("-Dcom.tencent.kona.defaultCrypto=Java",
             "--add-exports", "java.base/jdk.internal.access=ALL-UNNAMED")
+        excludeNativeOnlyTests()
 
         systemProperty("test.classpath", classpath.joinToString(separator = ":"))
 
@@ -139,6 +152,7 @@ tasks {
     register("testJavaOnAdop21", CommonTest::class) {
         jvmArgs("-Dcom.tencent.kona.defaultCrypto=Java",
             "--add-exports", "java.base/jdk.internal.access=ALL-UNNAMED")
+        excludeNativeOnlyTests()
 
         systemProperty("test.classpath", classpath.joinToString(separator = ":"))
 
@@ -154,6 +168,7 @@ tasks {
 
     register("testJavaOnKona8", CommonTest::class) {
         jvmArgs("-Dcom.tencent.kona.defaultCrypto=Java");
+        excludeNativeOnlyTests()
 
         systemProperty("test.classpath", classpath.joinToString(separator = ":"))
 
@@ -170,6 +185,7 @@ tasks {
     register("testJavaOnKona11", CommonTest::class) {
         jvmArgs("-Dcom.tencent.kona.defaultCrypto=Java",
             "--add-exports", "java.base/jdk.internal.misc=ALL-UNNAMED")
+        excludeNativeOnlyTests()
 
         systemProperty("test.classpath", classpath.joinToString(separator = ":"))
 
@@ -186,6 +202,7 @@ tasks {
     register("testJavaOnKona17", CommonTest::class) {
         jvmArgs("-Dcom.tencent.kona.defaultCrypto=Java",
             "--add-exports", "java.base/jdk.internal.access=ALL-UNNAMED")
+        excludeNativeOnlyTests()
 
         systemProperty("test.classpath", classpath.joinToString(separator = ":"))
 
@@ -202,6 +219,7 @@ tasks {
     register("testJavaOnKona21", CommonTest::class) {
         jvmArgs("-Dcom.tencent.kona.defaultCrypto=Java",
             "--add-exports", "java.base/jdk.internal.access=ALL-UNNAMED")
+        excludeNativeOnlyTests()
 
         systemProperty("test.classpath", classpath.joinToString(separator = ":"))
 
@@ -218,6 +236,7 @@ tasks {
     register("testJavaOnGraal17", CommonTest::class) {
         jvmArgs("-Dcom.tencent.kona.defaultCrypto=Java",
             "--add-exports", "java.base/jdk.internal.access=ALL-UNNAMED")
+        excludeNativeOnlyTests()
 
         systemProperty("test.classpath", classpath.joinToString(separator = ":"))
 
@@ -234,6 +253,7 @@ tasks {
     register("testJavaOnGraal21", CommonTest::class) {
         jvmArgs("-Dcom.tencent.kona.defaultCrypto=Java",
             "--add-exports", "java.base/jdk.internal.access=ALL-UNNAMED")
+        excludeNativeOnlyTests()
 
         systemProperty("test.classpath", classpath.joinToString(separator = ":"))
 

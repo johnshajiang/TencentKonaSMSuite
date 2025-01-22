@@ -52,6 +52,7 @@ public class KonaCryptoNativeOneShotProvider extends Provider {
     }
 
     private static void putEntries(Provider provider) {
+        putMDEntries(provider);
         putSMEntries(provider);
         KonaCryptoProvider.putSMPBES2Entries(provider);
         KonaCryptoProvider.putECEntries(provider);
@@ -89,6 +90,36 @@ public class KonaCryptoNativeOneShotProvider extends Provider {
         provider.put("Alg.Alias.Signature.SM3withSM2", "SM2");
         provider.put("KeyAgreement.SM2", "com.tencent.kona.crypto.provider.nativeImpl.SM2OneShotKeyAgreement");
         provider.put("KeyFactory.SM2", "com.tencent.kona.crypto.provider.SM2KeyFactory");
+    }
+
+    private static void putMDEntries(Provider provider) {
+        provider.put("MessageDigest.MD5",
+                "com.tencent.kona.crypto.provider.nativeImpl.KonaOneShotMessageDigest$MD5");
+        provider.put("MessageDigest.SHA-1",
+                "com.tencent.kona.crypto.provider.nativeImpl.KonaOneShotMessageDigest$SHA1");
+        provider.put("Alg.Alias.MessageDigest.SHA1", "SHA-1");
+
+        provider.put("MessageDigest.SHA-224",
+                "com.tencent.kona.crypto.provider.nativeImpl.KonaOneShotMessageDigest$SHA224");
+        provider.put("Alg.Alias.MessageDigest.SHA224", "SHA-224");
+        provider.put("MessageDigest.SHA-256",
+                "com.tencent.kona.crypto.provider.nativeImpl.KonaOneShotMessageDigest$SHA256");
+        provider.put("Alg.Alias.MessageDigest.SHA256", "SHA-256");
+        provider.put("MessageDigest.SHA-384",
+                "com.tencent.kona.crypto.provider.nativeImpl.KonaOneShotMessageDigest$SHA384");
+        provider.put("Alg.Alias.MessageDigest.SHA384", "SHA-384");
+        provider.put("MessageDigest.SHA-512",
+                "com.tencent.kona.crypto.provider.nativeImpl.KonaOneShotMessageDigest$SHA512");
+        provider.put("Alg.Alias.MessageDigest.SHA512", "SHA-512");
+
+        provider.put("MessageDigest.SHA3-224",
+                "com.tencent.kona.crypto.provider.nativeImpl.KonaOneShotMessageDigest$SHA3_224");
+        provider.put("MessageDigest.SHA3-256",
+                "com.tencent.kona.crypto.provider.nativeImpl.KonaOneShotMessageDigest$SHA3_256");
+        provider.put("MessageDigest.SHA3-384",
+                "com.tencent.kona.crypto.provider.nativeImpl.KonaOneShotMessageDigest$SHA3_384");
+        provider.put("MessageDigest.SHA3-512",
+                "com.tencent.kona.crypto.provider.nativeImpl.KonaOneShotMessageDigest$SHA3_512");
     }
 
     public static KonaCryptoNativeOneShotProvider instance() {

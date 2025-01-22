@@ -328,6 +328,21 @@ public class NativeRefProfTest {
         }
     }
 
+    private static void testMDDigest(String algorithm) {
+        for (int i = 0; i < ITERATIONS; i++) {
+            NativeMessageDigest sm3 = new NativeMessageDigest(algorithm);
+            sm3.update(DATA);
+            sm3.doFinal(DATA);
+            sm3.close();
+        }
+    }
+
+    private static void testMDOneShotDigest(String algorithm) {
+        for (int i = 0; i < ITERATIONS; i++) {
+            NativeCrypto.mdOneShotDigest(algorithm, DATA);
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         List<Callable<Void>> tasks = new ArrayList<>();
 
@@ -364,6 +379,15 @@ public class NativeRefProfTest {
 
         tasks.add(()-> {testSM2KeyAgreement(); return null;});
         tasks.add(()-> {testSM2OneShotKeyAgreement(); return null;});
+
+        tasks.add(()-> {testMDDigest("MD5"); return null;});
+        tasks.add(()-> {testMDDigest("SHA-1"); return null;});
+        tasks.add(()-> {testMDDigest("SHA-256"); return null;});
+        tasks.add(()-> {testMDDigest("SHA3-256"); return null;});
+        tasks.add(()-> {testMDOneShotDigest("MD5"); return null;});
+        tasks.add(()-> {testMDOneShotDigest("SHA-1"); return null;});
+        tasks.add(()-> {testMDOneShotDigest("SHA-256"); return null;});
+        tasks.add(()-> {testMDOneShotDigest("SHA3-256"); return null;});
 
         execTasksParallelly(tasks);
     }

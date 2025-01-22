@@ -224,4 +224,13 @@ final class NativeCrypto {
                                byte[] priKey, byte[] pubKey, byte[] ePrivKey, byte[] id,
                                byte[] peerPubKey, byte[] peerEPubKey, byte[] peerId,
                                boolean isInitiator, int sharedKeyLength);
+
+    /* ***** Message Digest ***** */
+    static native long   mdCreateCtx(String algorithm);
+    static native void   mdFreeCtx(long pointer);
+    static native int    mdUpdate(long pointer, byte[] data);
+    static native byte[] mdFinal(long pointer);
+    static native int    mdReset(long pointer);
+    static native long   mdClone(long pointer);
+    static native byte[] mdOneShotDigest(String algorithm, byte[] data);
 }

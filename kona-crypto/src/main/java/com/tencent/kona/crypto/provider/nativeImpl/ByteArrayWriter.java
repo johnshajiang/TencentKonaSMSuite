@@ -43,7 +43,7 @@ public class ByteArrayWriter {
     }
 
     public ByteArrayWriter() {
-        this(128);
+        this(256);
     }
 
     public ByteArrayWriter(byte[] initData) {
