@@ -57,13 +57,14 @@ public class KonaCryptoNativeOneShotProvider extends Provider {
         KonaCryptoProvider.putSMPBES2Entries(provider);
         KonaCryptoProvider.putECEntries(provider);
         SunRsaSignEntries.putEntries(provider);
+        putECEntries(provider);
     }
 
     private static void putSMEntries(Provider provider) {
         provider.put("Cipher.SM4 SupportedPaddings", "NOPADDING|PKCS7PADDING");
         provider.put("Cipher.SM4 SupportedModes", "CBC|CTR|ECB|GCM");
         provider.put("Cipher.SM4",
-                "com.tencent.kona.crypto.provider.nativeImpl.SM4Cipher$NativeOneShot");;
+                "com.tencent.kona.crypto.provider.nativeImpl.SM4Cipher$NativeOneShot");
         provider.put("AlgorithmParameters.SM4",
                 "com.tencent.kona.crypto.provider.SM4Parameters");
         provider.put("AlgorithmParameterGenerator.SM4",
@@ -120,6 +121,11 @@ public class KonaCryptoNativeOneShotProvider extends Provider {
                 "com.tencent.kona.crypto.provider.nativeImpl.KonaOneShotMessageDigest$SHA3_384");
         provider.put("MessageDigest.SHA3-512",
                 "com.tencent.kona.crypto.provider.nativeImpl.KonaOneShotMessageDigest$SHA3_512");
+    }
+
+    private static void putECEntries(Provider provider) {
+        provider.put("KeyPairGenerator.EC",
+                "com.tencent.kona.crypto.provider.nativeImpl.KonaOneShotECKeyPairGenerator");
     }
 
     public static KonaCryptoNativeOneShotProvider instance() {

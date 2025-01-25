@@ -233,4 +233,10 @@ final class NativeCrypto {
     static native int    mdReset(long pointer);
     static native long   mdClone(long pointer);
     static native byte[] mdOneShotDigest(String algorithm, byte[] data);
+
+    /* ***** ECC ***** */
+    static native Object[] ecOneShotKeyPairGenGenKeyPair(int curveNID);
+    static native long     ecKeyPairGenCreateCtx(int curveNID);
+    static native void     ecKeyPairGenFreeCtx(long pointer);
+    static native Object[] ecKeyPairGenGenKeyPair(long pointer);
 }

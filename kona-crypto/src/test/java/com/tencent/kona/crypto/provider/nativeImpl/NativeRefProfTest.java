@@ -25,8 +25,7 @@ import java.util.concurrent.*;
 
 import static com.tencent.kona.crypto.CryptoUtils.copy;
 import static com.tencent.kona.crypto.CryptoUtils.toBytes;
-import static com.tencent.kona.crypto.util.Constants.SM2_PRIKEY_LEN;
-import static com.tencent.kona.crypto.util.Constants.SM2_PUBKEY_LEN;
+import static com.tencent.kona.crypto.util.Constants.*;
 
 /**
  * A test for analyzing NativeRef objects, like NativeSM3.
@@ -343,6 +342,20 @@ public class NativeRefProfTest {
         }
     }
 
+    private static void testECKeyPairGenGenKeyPair(int curveNID) {
+        for (int i = 0; i < ITERATIONS; i++) {
+            NativeECKeyPairGen keyPairGen = new NativeECKeyPairGen(curveNID);
+            keyPairGen.genKeyPair();
+            keyPairGen.close();
+        }
+    }
+
+    private static void testECKeyPairGenOneShotGenKeyPair(int curveNID) {
+        for (int i = 0; i < ITERATIONS; i++) {
+            NativeCrypto.ecOneShotKeyPairGenGenKeyPair(curveNID);
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         List<Callable<Void>> tasks = new ArrayList<>();
 
@@ -388,6 +401,16 @@ public class NativeRefProfTest {
         tasks.add(()-> {testMDOneShotDigest("SHA-1"); return null;});
         tasks.add(()-> {testMDOneShotDigest("SHA-256"); return null;});
         tasks.add(()-> {testMDOneShotDigest("SHA3-256"); return null;});
+
+        tasks.add(()-> {testECKeyPairGenGenKeyPair(NID_SPEC256R1); return null;});
+        tasks.add(()-> {testECKeyPairGenGenKeyPair(NID_SPEC384R1); return null;});
+        tasks.add(()-> {testECKeyPairGenGenKeyPair(NID_SPEC521R1); return null;});
+        tasks.add(()-> {testECKeyPairGenGenKeyPair(NID_CURVESM2); return null;});
+
+        tasks.add(()-> {testECKeyPairGenOneShotGenKeyPair(NID_SPEC256R1); return null;});
+        tasks.add(()-> {testECKeyPairGenOneShotGenKeyPair(NID_SPEC384R1); return null;});
+        tasks.add(()-> {testECKeyPairGenOneShotGenKeyPair(NID_SPEC521R1); return null;});
+        tasks.add(()-> {testECKeyPairGenOneShotGenKeyPair(NID_CURVESM2); return null;});
 
         execTasksParallelly(tasks);
     }

@@ -57,6 +57,7 @@ public class KonaCryptoNativeProvider extends Provider {
         KonaCryptoProvider.putSMPBES2Entries(provider);
         KonaCryptoProvider.putECEntries(provider);
         SunRsaSignEntries.putEntries(provider);
+        putECEntries(provider);
     }
 
     private static void putSMEntries(Provider provider) {
@@ -120,6 +121,11 @@ public class KonaCryptoNativeProvider extends Provider {
                 "com.tencent.kona.crypto.provider.nativeImpl.KonaMessageDigest$SHA3_384");
         provider.put("MessageDigest.SHA3-512",
                 "com.tencent.kona.crypto.provider.nativeImpl.KonaMessageDigest$SHA3_512");
+    }
+
+    private static void putECEntries(Provider provider) {
+        provider.put("KeyPairGenerator.EC",
+                "com.tencent.kona.crypto.provider.nativeImpl.KonaECKeyPairGenerator");
     }
 
     public static KonaCryptoNativeProvider instance() {
