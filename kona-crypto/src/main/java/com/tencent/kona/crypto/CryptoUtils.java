@@ -46,7 +46,7 @@ public final class CryptoUtils {
 
     // Java, Native or NativeOneShot
     private static final String DEFAULT_CRYPTO = privilegedGetProperty(
-            "com.tencent.kona.defaultCrypto", "Java");
+            "com.tencent.kona.defaultCrypto", "Native");
 
     public static String privilegedGetProperty(String key, String def) {
         return AccessController.doPrivileged(
