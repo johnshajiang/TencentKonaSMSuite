@@ -35,30 +35,30 @@ public class NativeECKeyPairGeneratorTest {
 
     @Test
     public void testECKeyPairGenGenKeyPair() {
-        checkECKeyPairGenGenKeyPair(NID_SPEC256R1, 32);
-        checkECKeyPairGenGenKeyPair(NID_SPEC384R1, 48);
-        checkECKeyPairGenGenKeyPair(NID_SPEC521R1, 66);
+        checkECKeyPairGenGenKeyPair(NID_SECP256R1, 32);
+        checkECKeyPairGenGenKeyPair(NID_SECP384R1, 48);
+        checkECKeyPairGenGenKeyPair(NID_SECP521R1, 66);
         checkECKeyPairGenGenKeyPair(NID_CURVESM2, 32);
     }
 
     private void checkECKeyPairGenGenKeyPair(int curveNID, int keySize) {
         try (NativeECKeyPairGen ecKeyPairGen = new NativeECKeyPairGen(curveNID)) {
             Object[] keyPair = ecKeyPairGen.genKeyPair();
-            Assertions.assertTrue(keySize >= (((byte[])keyPair[0]).length));
+            Assertions.assertEquals(keySize, (((byte[]) keyPair[0]).length));
         }
     }
 
     @Test
     public void testOneShotECKeyPairGenGenKeyPair() {
-        checkOneShotECKeyPairGenGenKeyPair(NID_SPEC256R1, 32);
-        checkOneShotECKeyPairGenGenKeyPair(NID_SPEC384R1, 48);
-        checkOneShotECKeyPairGenGenKeyPair(NID_SPEC521R1, 66);
+        checkOneShotECKeyPairGenGenKeyPair(NID_SECP256R1, 32);
+        checkOneShotECKeyPairGenGenKeyPair(NID_SECP384R1, 48);
+        checkOneShotECKeyPairGenGenKeyPair(NID_SECP521R1, 66);
         checkOneShotECKeyPairGenGenKeyPair(NID_CURVESM2, 32);
     }
 
     private void checkOneShotECKeyPairGenGenKeyPair(int curveNID, int keySize) {
         Object[] keyPair = NativeCrypto.ecOneShotKeyPairGenGenKeyPair(curveNID);
-        Assertions.assertTrue(keySize >= (((byte[])keyPair[0]).length));
+        Assertions.assertEquals(keySize, (((byte[]) keyPair[0]).length));
     }
 
     @Test
