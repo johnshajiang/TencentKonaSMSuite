@@ -34,6 +34,7 @@ set(SOURCES kona_common.c
             kona_ec.c
             kona_ec_keypair.c
             kona_ecdsa.c
+            kona_ecdh.c
 
             kona_md.c)
 set(LIB_DIR "${CMAKE_SOURCE_DIR}/../resources")

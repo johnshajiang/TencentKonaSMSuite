@@ -51,3 +51,13 @@ ECDSA_CTX* ecdsa_create_ctx(int md_nid, EVP_PKEY* pkey, bool is_sign);
 void ECDSA_CTX_free(ECDSA_CTX* ctx);
 uint8_t* ecdsa_sign(EVP_MD_CTX* ctx, const uint8_t* msg, size_t msg_len, size_t* sig_len);
 int ecdsa_verify(EVP_MD_CTX* ctx, const uint8_t* msg, size_t msg_len, const uint8_t* sig, size_t sig_len);
+
+typedef struct {
+    EVP_PKEY* pkey;
+    EVP_PKEY_CTX* pctx;
+    int curve_nid;
+} ECDH_CTX;
+
+ECDH_CTX* ecdh_create_ctx(int curve_nid, EVP_PKEY* pkey);
+ECDH_CTX* ecdh_free_ctx(ECDH_CTX* ctx);
+uint8_t* ecdh_derive(EVP_PKEY_CTX* pkey_ctx, EVP_PKEY* peer_pkey, size_t* shared_key_len);
