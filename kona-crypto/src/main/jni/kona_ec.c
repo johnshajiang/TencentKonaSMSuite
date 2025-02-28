@@ -50,7 +50,13 @@ EVP_PKEY* ec_pri_key(int curveNID, const uint8_t* pri_key, size_t pri_key_len) {
     }
 
     EVP_PKEY *pkey = EVP_PKEY_new();
-    if (!pkey || !EVP_PKEY_assign_EC_KEY(pkey, ec_key)) {
+    if (!pkey) {
+        EC_KEY_free(ec_key);
+        BN_free(pri_key_bn);
+        return NULL;
+    }
+
+    if (!EVP_PKEY_assign_EC_KEY(pkey, ec_key)) {
         EC_KEY_free(ec_key);
         EVP_PKEY_free(pkey);
         BN_free(pri_key_bn);
@@ -66,16 +72,32 @@ EVP_PKEY* ec_pub_key(int curveNID, const uint8_t* pub_key, size_t pub_key_len) {
     if (!ec_key) return NULL;
 
     const EC_GROUP *group = EC_KEY_get0_group(ec_key);
+    if (!group) {
+        EC_KEY_free(ec_key);
+        return NULL;
+    }
+
     EC_POINT *pub_point = EC_POINT_new(group);
-    if (!pub_point || !EC_POINT_oct2point(group, pub_point, pub_key, pub_key_len, NULL)
-            || !EC_KEY_set_public_key(ec_key, pub_point)) {
+    if (!pub_point) {
+        EC_KEY_free(ec_key);
+        return NULL;
+    }
+
+    if (!EC_POINT_oct2point(group, pub_point, pub_key, pub_key_len, NULL) ||
+        !EC_KEY_set_public_key(ec_key, pub_point)) {
         EC_KEY_free(ec_key);
         EC_POINT_free(pub_point);
         return NULL;
     }
 
     EVP_PKEY *pkey = EVP_PKEY_new();
-    if (!pkey || !EVP_PKEY_assign_EC_KEY(pkey, ec_key)) {
+    if (!pkey) {
+        EC_KEY_free(ec_key);
+        EC_POINT_free(pub_point);
+        return NULL;
+    }
+
+    if (!EVP_PKEY_assign_EC_KEY(pkey, ec_key)) {
         EC_KEY_free(ec_key);
         EVP_PKEY_free(pkey);
         EC_POINT_free(pub_point);

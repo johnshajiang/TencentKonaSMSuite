@@ -45,9 +45,8 @@ ECDH_CTX* ecdh_create_ctx(int curve_nid, EVP_PKEY* pkey) {
         return NULL;
     }
 
-    ECDH_CTX* ctx = OPENSSL_malloc(sizeof(ECDH_CTX));
+    ECDH_CTX* ctx = (ECDH_CTX*)OPENSSL_malloc(sizeof(ECDH_CTX));
     if (ctx == NULL) {
-        OPENSSL_print_err();
         EVP_PKEY_CTX_free(pctx);
         return NULL;
     }
@@ -112,15 +111,17 @@ JNIEXPORT jlong JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_NativeC
     }
 
     EVP_PKEY* pkey = ec_pri_key(curveNID, (const uint8_t *)pri_key_bytes, key_len);
+    (*env)->ReleaseByteArrayElements(env, priKey, pri_key_bytes, JNI_ABORT);
     if (pkey == NULL) {
-        (*env)->ReleaseByteArrayElements(env, priKey, pri_key_bytes, JNI_ABORT);
-
         return OPENSSL_FAILURE;
     }
 
     ECDH_CTX* ctx = ecdh_create_ctx(curveNID, pkey);
+    if (ctx == NULL) {
+        EVP_PKEY_free(pkey);
 
-    (*env)->ReleaseByteArrayElements(env, priKey, pri_key_bytes, JNI_ABORT);
+        return OPENSSL_FAILURE;
+    }
 
     return (jlong)ctx;
 }
@@ -142,9 +143,10 @@ JNIEXPORT jbyteArray JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_Na
         return NULL;
     }
     jbyte* peer_pub_key_bytes = (*env)->GetByteArrayElements(env, peerPubKey, NULL);
-    if (!peer_pub_key_bytes) {
+    if (peer_pub_key_bytes == NULL) {
         return NULL;
     }
+
     EVP_PKEY* peer_pkey = ec_pub_key(ctx->curve_nid, (const uint8_t*)peer_pub_key_bytes, peer_pub_key_len);
     (*env)->ReleaseByteArrayElements(env, peerPubKey, peer_pub_key_bytes, JNI_ABORT);
     if (peer_pkey == NULL) {
@@ -154,7 +156,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_Na
     size_t shared_key_len;
     uint8_t* shared_key = ecdh_derive(ctx->pctx, peer_pkey, &shared_key_len);
     EVP_PKEY_free(peer_pkey);
-    if (!shared_key) {
+    if (shared_key == NULL) {
         return NULL;
     }
 
@@ -180,29 +182,30 @@ JNIEXPORT jbyteArray JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_Na
     }
 
     EVP_PKEY* pkey = ec_pri_key(curveNID, (const uint8_t *)pri_key_bytes, key_len);
+    (*env)->ReleaseByteArrayElements(env, priKey, pri_key_bytes, JNI_ABORT);
     if (pkey == NULL) {
-        (*env)->ReleaseByteArrayElements(env, priKey, pri_key_bytes, JNI_ABORT);
-
         return NULL;
     }
 
     ECDH_CTX* ctx = ecdh_create_ctx(curveNID, pkey);
     if (ctx == NULL) {
+        EVP_PKEY_free(pkey);
+
         return NULL;
     }
 
     jsize peer_pub_key_len = (*env)->GetArrayLength(env, peerPubKey);
     if (peer_pub_key_len <= 0) {
         ecdh_free_ctx(ctx);
-
         return NULL;
     }
     jbyte* peer_pub_key_bytes = (*env)->GetByteArrayElements(env, peerPubKey, NULL);
-    if (!peer_pub_key_bytes) {
+    if (peer_pub_key_bytes == NULL) {
         ecdh_free_ctx(ctx);
 
         return NULL;
     }
+
     EVP_PKEY* peer_pkey = ec_pub_key(ctx->curve_nid, (const uint8_t*)peer_pub_key_bytes, peer_pub_key_len);
     (*env)->ReleaseByteArrayElements(env, peerPubKey, peer_pub_key_bytes, JNI_ABORT);
     if (peer_pkey == NULL) {
@@ -214,7 +217,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_Na
     size_t shared_key_len;
     uint8_t* shared_key = ecdh_derive(ctx->pctx, peer_pkey, &shared_key_len);
     EVP_PKEY_free(peer_pkey);
-    if (!shared_key) {
+    if (shared_key == NULL) {
         ecdh_free_ctx(ctx);
 
         return NULL;
