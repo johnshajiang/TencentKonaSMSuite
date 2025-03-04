@@ -30,69 +30,49 @@
 #include "kona/kona_common.h"
 #include "kona/kona_ec.h"
 
-ECDH_CTX* ecdh_create_ctx(int curve_nid, EVP_PKEY* pkey) {
-    if (pkey == NULL) {
-        return NULL;
-    }
-
-    EVP_PKEY_CTX* pctx = EVP_PKEY_CTX_new(pkey, NULL);
-    if (!pctx) {
-        return NULL;
-    }
-
-    if (EVP_PKEY_derive_init(pctx) <= 0) {
-        EVP_PKEY_CTX_free(pctx);
+ECDH_CTX* ecdh_create_ctx(int curve_nid, EC_KEY* pri_key) {
+    if (pri_key == NULL) {
         return NULL;
     }
 
     ECDH_CTX* ctx = (ECDH_CTX*)OPENSSL_malloc(sizeof(ECDH_CTX));
     if (ctx == NULL) {
-        EVP_PKEY_CTX_free(pctx);
         return NULL;
     }
 
-    ctx->pkey = pkey;
-    ctx->pctx = pctx;
     ctx->curve_nid = curve_nid;
+    const EC_GROUP* group = EC_KEY_get0_group(pri_key);
+    ctx->key_len = ec_pri_key_len(group);
+    ctx->pri_key = pri_key;
 
     return ctx;
 }
 
-ECDH_CTX* ecdh_free_ctx(ECDH_CTX* ctx) {
+ECDH_CTX* ecdh_ctx_free(ECDH_CTX* ctx) {
     if (ctx != NULL) {
-        if (ctx->pctx != NULL) {
-            EVP_PKEY_CTX_free(ctx->pctx);
-            ctx->pctx = NULL;
-        }
-        if (ctx->pkey != NULL) {
-            EVP_PKEY_free(ctx->pkey);
-            ctx->pkey = NULL;
+        if (ctx->pri_key != NULL) {
+            EC_KEY_free(ctx->pri_key);
+            ctx->pri_key = NULL;
         }
 
         OPENSSL_free(ctx);
     }
 }
 
-uint8_t* ecdh_derive(EVP_PKEY_CTX* pkey_ctx, EVP_PKEY* peer_pkey, size_t* shared_key_len) {
-    if (!pkey_ctx || !peer_pkey || !shared_key_len) {
+uint8_t* ecdh_derive(ECDH_CTX* ctx, const EC_POINT* peer_pub_point) {
+    if (!ctx || !peer_pub_point) {
         return NULL;
     }
 
-    if (EVP_PKEY_derive_set_peer(pkey_ctx, peer_pkey) <= 0) {
-        return NULL;
-    }
-
-    if (EVP_PKEY_derive(pkey_ctx, NULL, shared_key_len) <= 0) {
-        return NULL;
-    }
-
-    uint8_t* shared_key = (uint8_t*)OPENSSL_malloc(*shared_key_len);
+    unsigned char* shared_key = OPENSSL_malloc(ctx->key_len);
     if (!shared_key) {
         return NULL;
     }
 
-    if (EVP_PKEY_derive(pkey_ctx, shared_key, shared_key_len) <= 0) {
+    int shared_key_len = ECDH_compute_key(shared_key, ctx->key_len, peer_pub_point, ctx->pri_key, NULL);
+    if (shared_key_len == 0 || shared_key_len != ctx->key_len) {
         OPENSSL_free(shared_key);
+
         return NULL;
     }
 
@@ -110,15 +90,16 @@ JNIEXPORT jlong JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_NativeC
         return OPENSSL_FAILURE;
     }
 
-    EVP_PKEY* pkey = ec_pri_key(curveNID, (const uint8_t *)pri_key_bytes, key_len);
+    EC_KEY* pri_key = ec_pri_key_new(curveNID, (const uint8_t *) pri_key_bytes,
+                                     key_len);
     (*env)->ReleaseByteArrayElements(env, priKey, pri_key_bytes, JNI_ABORT);
-    if (pkey == NULL) {
+    if (pri_key == NULL) {
         return OPENSSL_FAILURE;
     }
 
-    ECDH_CTX* ctx = ecdh_create_ctx(curveNID, pkey);
+    ECDH_CTX* ctx = ecdh_create_ctx(curveNID, pri_key);
     if (ctx == NULL) {
-        EVP_PKEY_free(pkey);
+        EC_KEY_free(pri_key);
 
         return OPENSSL_FAILURE;
     }
@@ -128,7 +109,7 @@ JNIEXPORT jlong JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_NativeC
 
 JNIEXPORT void JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto_ecdhFreeCtx
   (JNIEnv* env, jclass classObj, jlong pointer) {
-    ecdh_free_ctx((ECDH_CTX*)pointer);
+    ecdh_ctx_free((ECDH_CTX *) pointer);
 }
 
 JNIEXPORT jbyteArray JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto_ecdhDeriveKey
@@ -147,22 +128,29 @@ JNIEXPORT jbyteArray JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_Na
         return NULL;
     }
 
-    EVP_PKEY* peer_pkey = ec_pub_key(ctx->curve_nid, (const uint8_t*)peer_pub_key_bytes, peer_pub_key_len);
+    EC_KEY* peer_pub_key = ec_pub_key_new(ctx->curve_nid,
+                                          (const uint8_t *) peer_pub_key_bytes,
+                                          peer_pub_key_len);
     (*env)->ReleaseByteArrayElements(env, peerPubKey, peer_pub_key_bytes, JNI_ABORT);
-    if (peer_pkey == NULL) {
+    if (peer_pub_key == NULL) {
         return NULL;
     }
 
-    size_t shared_key_len;
-    uint8_t* shared_key = ecdh_derive(ctx->pctx, peer_pkey, &shared_key_len);
-    EVP_PKEY_free(peer_pkey);
+    const EC_POINT* peer_pub_point = EC_KEY_get0_public_key(peer_pub_key);
+    if (peer_pub_point == NULL) {
+        return NULL;
+    }
+
+
+    uint8_t* shared_key = ecdh_derive(ctx, peer_pub_point);
+    EC_KEY_free(peer_pub_key);
     if (shared_key == NULL) {
         return NULL;
     }
 
-    jbyteArray shared_key_bytes = (*env)->NewByteArray(env, shared_key_len);
+    jbyteArray shared_key_bytes = (*env)->NewByteArray(env, ctx->key_len);
     if (shared_key_bytes != NULL) {
-        (*env)->SetByteArrayRegion(env, shared_key_bytes, 0, shared_key_len, (jbyte*)shared_key);
+        (*env)->SetByteArrayRegion(env, shared_key_bytes, 0, ctx->key_len, (jbyte*)shared_key);
     }
 
     OPENSSL_free(shared_key);
@@ -181,55 +169,65 @@ JNIEXPORT jbyteArray JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_Na
         return NULL;
     }
 
-    EVP_PKEY* pkey = ec_pri_key(curveNID, (const uint8_t *)pri_key_bytes, key_len);
+    EC_KEY* pri_key = ec_pri_key_new(curveNID, (const uint8_t *) pri_key_bytes,
+                                     key_len);
     (*env)->ReleaseByteArrayElements(env, priKey, pri_key_bytes, JNI_ABORT);
-    if (pkey == NULL) {
+    if (pri_key == NULL) {
         return NULL;
     }
 
-    ECDH_CTX* ctx = ecdh_create_ctx(curveNID, pkey);
+    ECDH_CTX* ctx = ecdh_create_ctx(curveNID, pri_key);
     if (ctx == NULL) {
-        EVP_PKEY_free(pkey);
+        EC_KEY_free(pri_key);
 
         return NULL;
     }
 
     jsize peer_pub_key_len = (*env)->GetArrayLength(env, peerPubKey);
     if (peer_pub_key_len <= 0) {
-        ecdh_free_ctx(ctx);
+        ecdh_ctx_free(ctx);
         return NULL;
     }
     jbyte* peer_pub_key_bytes = (*env)->GetByteArrayElements(env, peerPubKey, NULL);
     if (peer_pub_key_bytes == NULL) {
-        ecdh_free_ctx(ctx);
+        ecdh_ctx_free(ctx);
 
         return NULL;
     }
 
-    EVP_PKEY* peer_pkey = ec_pub_key(ctx->curve_nid, (const uint8_t*)peer_pub_key_bytes, peer_pub_key_len);
+    EC_KEY* peer_pub_key = ec_pub_key_new(ctx->curve_nid,
+                                          (const uint8_t *) peer_pub_key_bytes,
+                                          peer_pub_key_len);
     (*env)->ReleaseByteArrayElements(env, peerPubKey, peer_pub_key_bytes, JNI_ABORT);
-    if (peer_pkey == NULL) {
-        ecdh_free_ctx(ctx);
+    if (peer_pub_key == NULL) {
+        ecdh_ctx_free(ctx);
 
         return NULL;
     }
 
-    size_t shared_key_len;
-    uint8_t* shared_key = ecdh_derive(ctx->pctx, peer_pkey, &shared_key_len);
-    EVP_PKEY_free(peer_pkey);
+    const EC_POINT* peer_pub_point = EC_KEY_get0_public_key(peer_pub_key);
+    if (peer_pub_point == NULL) {
+        ecdh_ctx_free(ctx);
+        EC_KEY_free(peer_pub_key);
+
+        return NULL;
+    }
+
+    uint8_t* shared_key = ecdh_derive(ctx, peer_pub_point);
+    EC_KEY_free(peer_pub_key);
     if (shared_key == NULL) {
-        ecdh_free_ctx(ctx);
+        ecdh_ctx_free(ctx);
 
         return NULL;
     }
 
-    jbyteArray shared_key_bytes = (*env)->NewByteArray(env, shared_key_len);
+    jbyteArray shared_key_bytes = (*env)->NewByteArray(env, ctx->key_len);
     if (shared_key_bytes != NULL) {
-        (*env)->SetByteArrayRegion(env, shared_key_bytes, 0, shared_key_len, (jbyte*)shared_key);
+        (*env)->SetByteArrayRegion(env, shared_key_bytes, 0, ctx->key_len, (jbyte*)shared_key);
     }
 
     OPENSSL_free(shared_key);
-    ecdh_free_ctx(ctx);
+    ecdh_ctx_free(ctx);
 
     return shared_key_bytes;
 }

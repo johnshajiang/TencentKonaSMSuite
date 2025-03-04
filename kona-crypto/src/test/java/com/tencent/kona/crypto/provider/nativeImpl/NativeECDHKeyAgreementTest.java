@@ -39,7 +39,7 @@ public class NativeECDHKeyAgreementTest {
         checkECDHDeriveKey(NID_SECP256R1);
         checkECDHDeriveKey(NID_SECP384R1);
         checkECDHDeriveKey(NID_SECP521R1);
-//        checkECDHDeriveKey(NID_CURVESM2);
+        checkECDHDeriveKey(NID_CURVESM2);
     }
 
     private void checkECDHDeriveKey(int curveNID) {
@@ -69,7 +69,7 @@ public class NativeECDHKeyAgreementTest {
         checkECDHOneShotDeriveKey(NID_SECP256R1);
         checkECDHOneShotDeriveKey(NID_SECP384R1);
         checkECDHOneShotDeriveKey(NID_SECP521R1);
-//        checkECDHOneShotDeriveKey(NID_CURVESM2);
+        checkECDHOneShotDeriveKey(NID_CURVESM2);
     }
 
     private void checkECDHOneShotDeriveKey(int curveNID) {
