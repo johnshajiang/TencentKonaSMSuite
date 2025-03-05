@@ -490,9 +490,11 @@ public class NativeRefProfTest {
         tasks.add(()-> {testECDHKeyAgreementDeriveKey(NID_SECP256R1); return null;});
         tasks.add(()-> {testECDHKeyAgreementDeriveKey(NID_SECP384R1); return null;});
         tasks.add(()-> {testECDHKeyAgreementDeriveKey(NID_SECP521R1); return null;});
+        tasks.add(()-> {testECDHKeyAgreementDeriveKey(NID_CURVESM2); return null;});
         tasks.add(()-> {testECDHKeyAgreementOneShotDeriveKey(NID_SECP256R1); return null;});
         tasks.add(()-> {testECDHKeyAgreementOneShotDeriveKey(NID_SECP384R1); return null;});
         tasks.add(()-> {testECDHKeyAgreementOneShotDeriveKey(NID_SECP521R1); return null;});
+        tasks.add(()-> {testECDHKeyAgreementOneShotDeriveKey(NID_CURVESM2); return null;});
 
         execTasksParallelly(tasks);
     }
