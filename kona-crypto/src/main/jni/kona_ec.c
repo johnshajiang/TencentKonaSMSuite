@@ -20,9 +20,6 @@
 // Need to use the deprecated lower EC functions
 #define OPENSSL_SUPPRESS_DEPRECATED
 
-#include <stdlib.h>
-#include <string.h>
-
 #include <jni.h>
 
 #include <openssl/core_names.h>
@@ -219,6 +216,41 @@ int ec_validate_point(EC_GROUP* group, EC_POINT *point) {
            ec_check_point_order(group, point);
 }
 
+EVP_PKEY *ec_gen_param(int curve_nid) {
+    EVP_PKEY_CTX *param_ctx = NULL;
+    EVP_PKEY *params = NULL;
+
+    param_ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_EC, NULL);
+    if (!param_ctx) {
+        OPENSSL_print_err();
+
+        return NULL;
+    }
+
+    if (!EVP_PKEY_paramgen_init(param_ctx)) {
+        OPENSSL_print_err();
+        EVP_PKEY_CTX_free(param_ctx);
+
+        return NULL;
+    }
+
+    if (!EVP_PKEY_CTX_set_ec_paramgen_curve_nid(param_ctx, curve_nid)) {
+        OPENSSL_print_err();
+        EVP_PKEY_CTX_free(param_ctx);
+
+        return NULL;
+    }
+
+    if (!EVP_PKEY_paramgen(param_ctx, &params)) {
+        OPENSSL_print_err();
+        EVP_PKEY_CTX_free(param_ctx);
+
+        return NULL;
+    }
+
+    return params;
+}
+
 EVP_PKEY_CTX* ec_create_pkey_ctx(EVP_PKEY* pkey) {
     EVP_PKEY_CTX* ctx = NULL;
 
@@ -235,4 +267,48 @@ EVP_PKEY_CTX* ec_create_pkey_ctx(EVP_PKEY* pkey) {
     }
 
     return ctx;
+}
+
+static const int supported_curves[] = {
+        NID_X9_62_prime256v1,
+        NID_secp384r1,
+        NID_secp521r1,
+        NID_sm2
+};
+
+static EVP_PKEY *cached_params[sizeof(supported_curves)/sizeof(int)];
+
+void ec_init_param_cache() {
+    for (size_t i = 0; i < sizeof(supported_curves)/sizeof(int); i++) {
+        cached_params[i] = ec_gen_param(supported_curves[i]);
+    }
+}
+
+EVP_PKEY* ec_get_cached_param(int curve_nid) {
+    for (size_t i = 0; i < sizeof(supported_curves)/sizeof(int); i++) {
+        if (supported_curves[i] == curve_nid) {
+            return cached_params[i];
+        }
+    }
+
+    return NULL;
+}
+
+void ec_param_cache_free() {
+    for (size_t i = 0; i < sizeof(supported_curves)/sizeof(int); i++) {
+        if (cached_params[i]) {
+            EVP_PKEY_free(cached_params[i]);
+            cached_params[i] = NULL;
+        }
+    }
+}
+
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
+    OPENSSL_init_crypto(OPENSSL_INIT_LOAD_CONFIG | OPENSSL_INIT_ATFORK, NULL);
+    ec_init_param_cache();
+    return JNI_VERSION_1_8;
+}
+
+JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *vm, void *reserved) {
+    ec_param_cache_free();
 }
