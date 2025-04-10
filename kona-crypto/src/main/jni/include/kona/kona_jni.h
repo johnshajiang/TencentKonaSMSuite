@@ -422,10 +422,10 @@ JNIEXPORT jbyteArray JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_Na
 /*
  * Class:     com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto
  * Method:    ecOneShotKeyPairGenGenKeyPair
- * Signature: (I)[Ljava/lang/Object;
+ * Signature: (I[B[B)V
  */
-JNIEXPORT jobjectArray JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto_ecOneShotKeyPairGenGenKeyPair
-  (JNIEnv *, jclass, jint);
+JNIEXPORT void JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto_ecOneShotKeyPairGenGenKeyPair
+  (JNIEnv *, jclass, jint, jbyteArray, jbyteArray);
 
 /*
  * Class:     com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto
@@ -446,10 +446,10 @@ JNIEXPORT void JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_NativeCr
 /*
  * Class:     com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto
  * Method:    ecKeyPairGenGenKeyPair
- * Signature: (J)[Ljava/lang/Object;
+ * Signature: (J[B[B)V
  */
-JNIEXPORT jobjectArray JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto_ecKeyPairGenGenKeyPair
-  (JNIEnv *, jclass, jlong);
+JNIEXPORT void JNICALL Java_com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto_ecKeyPairGenGenKeyPair
+  (JNIEnv *, jclass, jlong, jbyteArray, jbyteArray);
 
 /*
  * Class:     com_tencent_kona_crypto_provider_nativeImpl_NativeCrypto
