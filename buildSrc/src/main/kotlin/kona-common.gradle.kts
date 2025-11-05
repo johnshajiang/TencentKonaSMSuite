@@ -169,6 +169,23 @@ tasks {
         }
     }
 
+    register("testJavaOnAdop25", CommonTest::class) {
+        jvmArgs("-Dcom.tencent.kona.defaultCrypto=Java",
+            "--add-exports", "java.base/jdk.internal.access=ALL-UNNAMED")
+        excludeNativeOnlyTests()
+
+        systemProperty("test.classpath", classpath.joinToString(separator = ":"))
+
+        javaLauncher.set(javaToolchains.launcherFor {
+            languageVersion.set(JavaLanguageVersion.of(25))
+            vendor.set(JvmVendorSpec.ADOPTIUM)
+        })
+
+        doFirst {
+            println("Testing JDK: " + javaLauncher.get().metadata.installationPath)
+        }
+    }
+
     register("testJavaOnKona8", CommonTest::class) {
         jvmArgs("-Dcom.tencent.kona.defaultCrypto=Java");
         excludeNativeOnlyTests()
